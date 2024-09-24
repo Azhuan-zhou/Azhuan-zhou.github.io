@@ -9,8 +9,9 @@ from hybrid_python.align_image_code import align_images, show_img
 import matplotlib.pyplot as plt
 def save_imgs(imgs:list,names:list):
     save_dir = './results'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
     for img,name in zip(imgs,names):
-        #show_img(img)
         cv2.imwrite(os.path.join(save_dir,name),img)
 
 def conv(img, filter):
@@ -74,7 +75,7 @@ def sharpening(image:np.ndarray,ksize=7,sigma=1):
         original_img_kernel[ksize//2][ksize//2] = 1
         unsharp_mask_filter =(alpha+1)*original_img_kernel - alpha*gaussian_kernel
         sharp_img = conv(image,unsharp_mask_filter)
-        save_imgs([sharp_img],['sharp_alpha_2({}).png'.format(alpha)])
+        save_imgs([sharp_img],['sharp_alpha({}).png'.format(alpha)])
 
 def frequency_analysis(image):
     if len(image.shape) == 3:
@@ -138,7 +139,7 @@ def blend(img1,img2,mask):
     for i in range(len(L_img1_stack)):
         collapse = collapse + g_mask_stack[i] * L_img1_stack[i] + (1-g_mask_stack[i])*L_img2_stack[i]
         collapse_imgs.append(rescale(collapse))
-    names = ['collapse_3_{}.png'.format(i) for i in range(1, len(collapse_imgs)+1)]
+    names = ['collapse{}.png'.format(i) for i in range(1, len(collapse_imgs)+1)]
     save_imgs(collapse_imgs, names)
 
 def rescale(img):
@@ -157,69 +158,115 @@ def rescale(img):
     else:
         return np.dstack(channels)
     
-def main():
-    # 1
-    #path = './images/cameraman.png'
-    #img = cv2.imread(path)
-    #threshold = 30
-    ##difference(img,threshold)
-    #DOG(img,threshold)
-    #2.1 sharpening
+def task_1_1():
+    path = './images/cameraman.png'
+    img = cv2.imread(path)
+    threshold = 80
+    difference(img,threshold)
+
+def task_1_2():
+    path = './images/cameraman.png'
+    img = cv2.imread(path)
+    threshold = 30
+    DOG(img,threshold)
+
+def task_2_1_1():
+    img = cv2.imread('./images/taj.jpg')
+    sharpening(img)
+def task_2_1_2():
+    img = cv2.imread('./images/sunset.jpeg')
+    sharpening(img)
+def task_2_1_3():
     img = cv2.imread('./images/tower.png')
     G_= cv2.getGaussianKernel(7,1)
     G = G_@G_.T
     img_blur = conv(img,G)
     sharpening(img_blur)
-    save_imgs([img_blur],['tower_blur.png'])
-    # 2.2
-    #img1 = cv2.imread('./images/dog.png') 
-    #img2 = cv2.imread('./images/suit.png')
-    #img1,img2 = align_images(img1,img2)
-    #img1 = img_as_ubyte(img1)
-    #img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY) /255
-    #img2 = img_as_ubyte(img2)
-    #img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY) / 255
-    #hybrid_imgs(img2,img1)
-    #img2 = cv2.imread('./images/M.png') 
-    #img1 = cv2.imread('./images/E.png')
-    #img1,img2 = align_images(img1,img2)
-    #img1 = img_as_ubyte(img1)/ 255
-    #img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-    #img2 = img_as_ubyte(img2)/ 255
-    #img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-    #hybrid_imgs(img2,img1)
-    # 2.3
-    #apple = cv2.imread("./images/apple.jpeg")
+    save_imgs([img_blur],['tower_blur.png']) 
 
-    #G_s_a = GaussianStack(apple)
-    #names1 = ['G_a{}.png'.format(i+1) for i in range(6)]
-    #L_s_a = LaplacianStack(apple)
-    #names2 = ['L_a{}.png'.format(i+1) for i in range(6)]
-    #orange = cv2.imread("./images/orange.jpeg")
-    #G_s_o = GaussianStack(orange)
-    #names3 = ['G_o{}.png'.format(i+1) for i in range(6)]
-    #L_s_o = LaplacianStack(orange)
-    #names4 = ['L_o{}.png'.format(i+1) for i in range(6)]
-    #images = G_s_a+L_s_a+G_s_o+L_s_o
-    #images = [rescale(i) for i in images]
-    #save_imgs(images,names1+names2+names3+names4)
-    #mask = np.ones_like(apple)
-    #mask[:,(apple.shape[1]//2):, :] = 0.0 # vertical
-    #blend(apple,orange,mask)
-    # test dog and suit
-    #dog = cv2.imread("./images/dog.png")
-    #suit = cv2.imread("./images/suit.png")
-    #mask = cv2.imread("./images/mask.png")
-    #mask = (mask==255)*1.0
-    #blend(dog,suit,mask)
-    # test cat and owl
-    #cat = cv2.imread("./images/cat.png")
-    #owl = cv2.imread("./images/owl.jpg")
-    #mask3 = cv2.imread("./images/mask3.png")
-    #mask3 = (mask3==255)*1.0
-    #blend(cat,owl,mask3)
+def task_2_2_1():
+    # nutmeg and DerekOicture
+    img1 = cv2.imread('./images/nutmeg.jpg') 
+    img2 = cv2.imread('./images/DerekPicture.jpg')
+    img1,img2 = align_images(img1,img2)
+    img1 = img_as_ubyte(img1)
+    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY) /255
+    img2 = img_as_ubyte(img2)
+    img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY) / 255
+    hybrid_imgs(img2,img1)
+def task_2_2_2():
+    # dog and suit
+    img1 = cv2.imread('./images/dog.png') 
+    img2 = cv2.imread('./images/suit.png')
+    img1,img2 = align_images(img1,img2)
+    img1 = img_as_ubyte(img1)
+    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY) /255
+    img2 = img_as_ubyte(img2)
+    img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY) / 255
+    hybrid_imgs(img2,img1)
+def task_2_2_3():
+    # Albert Einstein and Marilyn Monroe
+    img1 = cv2.imread('./images/E.png') 
+    img2 = cv2.imread('./images/M.png')
+    img1,img2 = align_images(img1,img2)
+    img1 = img_as_ubyte(img1)
+    img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY) /255
+    img2 = img_as_ubyte(img2)
+    img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY) / 255
+    hybrid_imgs(img2,img1)
+
+def task_2_3():
+    apple = cv2.imread("./images/apple.jpeg")
+    G_s_a = GaussianStack(apple)
+    names1 = ['G_a{}.png'.format(i+1) for i in range(6)]
+    L_s_a = LaplacianStack(apple)
+    names2 = ['L_a{}.png'.format(i+1) for i in range(6)]
+    orange = cv2.imread("./images/orange.jpeg")
+    G_s_o = GaussianStack(orange)
+    names3 = ['G_o{}.png'.format(i+1) for i in range(6)]
+    L_s_o = LaplacianStack(orange)
+    names4 = ['L_o{}.png'.format(i+1) for i in range(6)]
+    images = G_s_a+L_s_a+G_s_o+L_s_o
+    images = [rescale(i) for i in images]
+    save_imgs(images,names1+names2+names3+names4)
+
+def task_2_4_1():
+    # apple and orange
+    apple = cv2.imread("./images/apple.jpeg")
+    orange = cv2.imread("./images/orange.jpeg")
+    mask = np.ones_like(apple)
+    mask[:,(apple.shape[1]//2):, :] = 0.0 # vertical
+    blend(apple,orange,mask)
+
+def task_2_4_2():
+    # suit and dog
+    dog = cv2.imread("./images/dog.png")
+    suit = cv2.imread("./images/suit.png")
+    mask = cv2.imread("./images/mask.png")
+    mask = (mask==255)*1.0
+    blend(dog,suit,mask)
+
+def task_2_4_3():
+    # cat and owl
+    cat = cv2.imread("./images/cat.png")
+    owl = cv2.imread("./images/owl.jpg")
+    mask3 = cv2.imread("./images/mask3.png")
+    mask3 = (mask3==255)*1.0
+    blend(cat,owl,mask3)
 
     
 
 if __name__ == '__main__':
-    main()
+    #task_1_1()
+    #task_1_2()
+    #task_2_1_1()
+    #task_2_1_2()
+    #task_2_1_3()
+    #task_2_2_1()
+    #task_2_2_2()
+    #task_2_2_3()
+    #task_2_3()
+    #task_2_4_1()
+    #task_2_4_2()
+    #task_2_4_3()
+    pass
