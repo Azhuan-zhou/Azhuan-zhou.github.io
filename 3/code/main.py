@@ -229,4 +229,11 @@ def BellsWhistles():
 
 
 if __name__ == '__main__':
-    BellsWhistles()
+    #task1()
+    #task2()
+    #task3()
+    #task4_1()
+    #task4_2()
+    #task5()
+    #BellsWhistles()
+    pass
