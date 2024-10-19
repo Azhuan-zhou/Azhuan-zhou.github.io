@@ -261,6 +261,8 @@ def mosaic_garden():
     io.imsave(images_dir+'mosaic3.png', img)
     
 if __name__ == "__main__":
+    rectification_laptop()
+    rectification_slide()
     mosaic_lecture()
     mosaic_garden()
     mosaic_library()
