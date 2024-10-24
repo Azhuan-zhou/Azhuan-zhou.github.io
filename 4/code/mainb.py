@@ -180,6 +180,7 @@ def step2(path):
     plt.plot(coords[1,:], coords[0,:],'ro', markersize=3)
     plt.plot(coords_ANMS[1,:], coords_ANMS[0,:],'bo', markersize=3)
     plt.savefig('./images/{}.png'.format(name), dpi=300, bbox_inches='tight')
+    plt.close()
     
 def step3(path1, path2, name):
     img1 = sk.img_as_float(imread(path1))[:, :, :3]
@@ -256,24 +257,24 @@ def step4_garden():
     imsave('./images/'+'garden_mosaic_auto.png',img)
     
 if __name__ == "__main__":
-   #step1(path = './images/library1.png')
-   #step1(path = './images/library2.png')
-   #step2(path = './images/library1.png')
-   #step2(path = './images/library2.png')
-   #step3('./images/library1.png','./images/library2.png',name='library_feature_match')
+   step1(path = './images/library1.png')
+   step1(path = './images/library2.png')
+   step2(path = './images/library1.png')
+   step2(path = './images/library2.png')
+   step3('./images/library1.png','./images/library2.png',name='library_feature_match')
     #step4_library()
    
-   #step1(path = './images/garden1.png')
-   #step1(path = './images/garden2.png')
-   #step2(path = './images/garden2.png')
-   #step2(path = './images/garden1.png')
-   #step3('./images/garden1.png','./images/garden2.png',name='garden_feature_match')
-    step4_garden()
-   #step1(path = './images/lecture1.png')
-   #step1(path = './images/lecture2.png')
-   #step2(path='./images/lecture1.png')
-   #step2(path = './images/lecture2.png')
-   #step3('./images/lecture1.png','./images/lecture2.png',name='lecture_feature_match')
+   step1(path = './images/garden1.png')
+   step1(path = './images/garden2.png')
+   step2(path = './images/garden1.png')
+   step2(path = './images/garden2.png')
+   step3('./images/garden1.png','./images/garden2.png',name='garden_feature_match')
+    #step4_garden()
+   step1(path = './images/lecture1.png')
+   step1(path = './images/lecture2.png')
+   step2(path='./images/lecture1.png')
+   step2(path = './images/lecture2.png')
+   step3('./images/lecture1.png','./images/lecture2.png',name='lecture_feature_match')
     #step4_lecture()
     
     
