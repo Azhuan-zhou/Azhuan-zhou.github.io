@@ -3,3 +3,7 @@
 ```
 python main.py
 ```
+## Part 2
+```
+python mainb.py
+```

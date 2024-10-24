@@ -154,7 +154,7 @@ def create_mask(im, mask, value, gradient_type='im1'):
     
     return mask_value
 
-def stitch(img1,img2,name='3'):
+def stitch(img1,img2,name=None):
     mask = np.any(img1 != 0, axis=2) & np.any(img2 != 0, axis=2)
     cols = np.where(np.any(mask, axis=0))[0]
     values = np.linspace(1, 0, num=cols.shape[0])
@@ -166,8 +166,9 @@ def stitch(img1,img2,name='3'):
     # Create masks for both images using a helper function
     im1_mask = create_mask(img1, mask, overlap_values, gradient_type='im1')
     im2_mask = create_mask(img2, mask, overlap_values, gradient_type='im2')
-    io.imsave(images_dir+'mask_{}_1.png'.format(name),im1_mask)
-    io.imsave(images_dir+'mask_{}_2.png'.format(name),im2_mask)
+    if name:
+        io.imsave(images_dir+'mask_{}_1.png'.format(name),im1_mask)
+        io.imsave(images_dir+'mask_{}_2.png'.format(name),im2_mask)
     # Stitch images
     stitched_image = blend(img1,img2,im1_mask,im2_mask)
     return np.clip(stitched_image, 0, 1)

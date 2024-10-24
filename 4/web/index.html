@@ -86,7 +86,7 @@
         text-align: center; 
     }
     .image-row img {
-        width: 250px; 
+        width: 400px; 
         height: auto;
     }
     </style>
@@ -303,6 +303,139 @@ p_2{\prime}
             <figure>
                 <img src="../code/images/mosaic3.png" style="width: 600px; height: auto; display: block; margin: 0 auto;">
             </figure>
+        </section>
+        <hr style="width: 80%; border: 1px solid black; margin: 5px auto;">
+        <section>
+            <h1>Part B: FEATURE MATCHING for AUTOSTITCHING</h1>
+        </section>
+        <section>
+            <h2>Overview</h2>
+            <p>In this project, I aimed to automate image stitching into a mosaic while deepening my understanding of implementing research papers. Following the steps outlined in “Multi-Image Matching using Multi-Scale Oriented Patches” by Brown et al., I first detected corner features using the Harris Interest Point Detector and refined them through Adaptive Non-Maximal Suppression. I then extracted 8x8 feature descriptors from larger 40x40 windows, ensuring proper normalization for consistency. To match features between images, I applied Lowe’s method of thresholding the ratio between the first and second nearest neighbors, filtering out unreliable matches. Finally, I computed a robust homography using a 4-point RANSAC algorithm to accurately align the images. </p>
+        </section>
+        <section>
+            <h2>step1: Harris Interest Point</h2>
+            <p>In corner dection, we use the Harris interest point detector.</p>
+            <p>The examples below is the Harris Interest Point of the images:</p>
+            <p>CS180 lecture</p>
+            <div class="image-row">
+                <figure>
+                    <img src="../code/images/lecture1_harris_points.png" alt="Image 1">
+                </figure>
+                <figure>
+                    <img src="../code/images/lecture2_harris_points.png" alt="Image 2">
+                
+                </figure>
+            </div>
+            <p>Library</p>
+            <div class="image-row">
+                <figure>
+                    <img src="../code/images/library1_harris_points.png" alt="Image 1">
+                </figure>
+                <figure>
+                    <img src="../code/images/library1_harris_points.png" alt="Image 2">
+                
+                </figure>
+            </div>
+            <p>My garden</p>
+            <div class="image-row">
+                <figure>
+                    <img src="../code/images/garden1_harris_points.png" alt="Image 1">
+                </figure>
+                <figure>
+                    <img src="../code/images/garden2_harris_points.png" alt="Image 2"> 
+                </figure>
+            </div>
+        </section>
+        <section>
+            <h2>Step2: Adaptive Non-Maximal Suppression</h2>
+            <p>Adaptive Non-Maximal Suppression (ANMS) selects the most prominent features by retaining only the points with the highest corner strength while ensuring they are sufficiently spaced apart. It suppresses weaker points within a certain radius around stronger features, enhancing feature distribution across the image.</p>
+            <p>See the results of ANMS below. The red point is the Harris Interest Point and The blue point is the Harris Interest Point after ANMS</p>
+            <p>CS180 lecture</p>
+            <div class="image-row">
+                <figure>
+                    <img src="../code/images/lecture1_harris_points_ANMS.png" alt="Image 1">
+                </figure>
+                <figure>
+                    <img src="../code/images/lecture2_harris_points_ANMS.png" alt="Image 2">
+                
+                </figure>
+            </div>
+            <p>Library</p>
+            <div class="image-row">
+                <figure>
+                    <img src="../code/images/library1_harris_points_ANMS.png" alt="Image 1">
+                </figure>
+                <figure>
+                    <img src="../code/images/library1_harris_points_ANMS.png" alt="Image 2">
+                </figure>
+            </div>
+            <p>My garden</p>
+            <div class="image-row">
+                <figure>
+                    <img src="../code/images/garden1_harris_points_ANMS.png" alt="Image 1">
+                </figure>
+                <figure>
+                    <img src="../code/images/garden2_harris_points_ANMS.png" alt="Image 2"> 
+                </figure>
+            </div>
+        </section>
+        <section>
+            <h2>Step3: Feature Descriptor Extraction & Feature Matching</h2>
+            <p>
+                The feature extraction process begins by iterating through interest points, extracting a 40x40 pixel patch around each one if it fits within the image boundaries. The patch is then smoothed using a Gaussian filter to reduce noise and resized to an 8x8 patch with anti-aliasing. Next, bias/gain normalization is applied by subtracting the mean and dividing by the standard deviation. The resulting 8x8 patch is flattened into a vector and stored as a feature descriptor. Finally, all descriptors are collected and returned as an array. <br>
+                There is one descriptor of an image show below:
+            </p>
+            <img src="../code/images/feature.png" style="width: 600px; height: auto; display: block; margin: 0 auto;">
+            <p>
+                The feature matching process involves comparing feature descriptors between two images to find corresponding points. For each descriptor in the first image, the Euclidean distance to all descriptors in the second image is calculated. To filter reliable matches, Lowe’s ratio test is applied: the ratio between the distance to the nearest neighbor and the distance to the second nearest neighbor is computed, and only matches where this ratio is below a set threshold are retained. This helps eliminate ambiguous or weak matches, ensuring that the matched features are distinct and likely to correspond between the two images.
+            </p>
+            <p>See the matching results of images below. The red point is the Harris Interest Point after ANMS and The blue point is matched points.
+            <img src="../code/images/lecture_feature_match.png" style="width: 800px; height: auto; display: block; margin: 0 auto;">
+            <img src="../code/images/library_feature_match.png" style="width: 800px; height: auto; display: block; margin: 0 auto;">
+            <img src="../code/images/garden_feature_match.png" style="width: 800px; height: auto; display: block; margin: 0 auto;">
+        </section>
+        <section>
+            <h2>Step4: RANSAC</h2>
+            <p>After selecting prominent features using Adaptive Non-Maximal Suppression (ANMS) and finding correspondences through feature matching, RANSAC (Random Sample Consensus) is applied to estimate a robust homography. The method randomly selects a minimal set of four point correspondences to compute the homography matrix, then applies the matrix to all points to identify inliers—points that fit the model within a set threshold. This process repeats for a fixed number of iterations, with the homography producing the most inliers chosen as the final estimate, effectively minimizing the impact of outliers and ensuring accurate image alignment.</p>
+            <p>Thus, we can automatically compute the homography of images and use it to stitch them together, creating a seamless mosaic.</p>
+            <p>CS180 lecture</p>
+            <div class="image-row">
+                <figure>
+                    <img src="../code/images/mosaic2.png" alt="Image 1">
+                    <figcaption>manual correspondences</figcaption>
+                </figure>
+                <figure>
+                    <img src="../code/images/lecture_mosaic_auto.png" alt="Image 2">
+                    <figcaption>automatic correspondences</figcaption>
+                </figure>
+            </div>
+            <p>Library</p>
+            <div class="image-row">
+                <figure>
+                    <img src="../code/images/mosaic1.png" alt="Image 1">
+                    <figcaption>manual correspondences</figcaption>
+                </figure>
+                <figure>
+                    <img src="../code/images/library_mosaic_auto.png" alt="Image 2">
+                    <figcaption>automatic correspondences</figcaption>
+                </figure>
+            </div>
+            <p>My garden</p>
+            <div class="image-row">
+                <figure>
+                    <img src="../code/images/mosaic3.png" alt="Image 1">
+                    <figcaption>manual correspondences</figcaption>
+                </figure>
+                <figure>
+                    <img src="../code/images/garden_mosaic_auto.png" alt="Image 2"> 
+                    <figcaption>automatic correspondences</figcaption>
+                </figure>
+            </div>
+            <p>The automatic stitching achieves results comparable to manual correspondences, demonstrating the effectiveness of Harris interest points, ANMS, and the RANSAC method.</p>
+        </section>
+        <section>
+            <h2>What have you learned?</h2>
+            <p>Through this project, the coolest thing I have learned if the key techniques in automated image stitching, including feature detection with Harris Interest Points and refinement using ANMS for better distribution. I gained practical experience in extracting normalized feature descriptors and filtering matches using Lowe’s ratio test for reliable correspondences. Applying RANSAC highlighted the importance of robust outlier handling in estimating homography. Overall, I understood how these techniques combine to create seamless mosaics, demonstrating the effectiveness of automated approaches in image alignment and stitching tasks.</p>
         </section>
     </div>
 </body>
